@@ -8,13 +8,16 @@ import './favorites_screen.dart';
 import '../widgets/main_drawer.dart';
 import '../models/meal.dart';
 import '../screens/category_meals_screen.dart';
+import '../screens/meal_detail_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   final List<Meal> favoriteMeals;
   final List<Meal> availableMeals;
+  final Function toggleFavorite;
+  final Function isMealFavorite;
 
-
-  TabsScreen(this.favoriteMeals, this.availableMeals);
+  TabsScreen(this.favoriteMeals, this.availableMeals, this.toggleFavorite,
+      this.isMealFavorite);
 
   @override
   _TabsScreenState createState() => _TabsScreenState();
@@ -67,7 +70,7 @@ class _TabsScreenState extends State<TabsScreen> {
   }
 
   Widget _buildCupertinoPage() {
-    return CupertinoTabScaffold(   
+    return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         backgroundColor: Colors.white,
         activeColor: Colors.blue[900],
@@ -91,7 +94,9 @@ class _TabsScreenState extends State<TabsScreen> {
         return CupertinoTabView(
           routes: {
             CategoryMealsScreen.routeName: (_) =>
-            CategoryMealsScreen(widget.availableMeals),
+                CategoryMealsScreen(widget.availableMeals),
+            MealDetailScreen.routeName: (_) => MealDetailScreen(
+                widget.toggleFavorite, widget.isMealFavorite),
           },
           builder: (BuildContext context) {
             return CupertinoPageScaffold(
@@ -131,6 +136,6 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Platform.isIOS ? _buildCupertinoPage() : _buildAndroidPage();
+    return !Platform.isIOS ? _buildCupertinoPage() : _buildAndroidPage();
   }
 }

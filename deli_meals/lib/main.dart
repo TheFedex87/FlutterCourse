@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -47,14 +49,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _toggleFavorite(String mealId) {
-    final existingIndex = _favoriteMeals.indexWhere((meal) => meal.id == mealId);
+    final existingIndex =
+        _favoriteMeals.indexWhere((meal) => meal.id == mealId);
     if (existingIndex >= 0) {
       setState(() {
-        _favoriteMeals.removeAt(existingIndex);  
+        _favoriteMeals.removeAt(existingIndex);
       });
     } else {
       setState(() {
-        _favoriteMeals.add(DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));  
+        _favoriteMeals.add(DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));
       });
     }
   }
@@ -63,14 +66,13 @@ class _MyAppState extends State<MyApp> {
     return _favoriteMeals.any((meal) => meal.id == mealId);
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget buildMaterialApp() {
     return MaterialApp(
       title: 'DeliMeals',
       theme: ThemeData(
         primarySwatch: Colors.pink,
         accentColor: Colors.amber,
-        canvasColor: Color.fromRGBO(255, 254, 229, 1),
+        canvasColor: !Platform.isIOS ? Colors.white : Color.fromRGBO(255, 254, 229, 1),
         fontFamily: 'Raleway',
         textTheme: ThemeData.light().textTheme.copyWith(
               body1: TextStyle(
@@ -89,13 +91,48 @@ class _MyAppState extends State<MyApp> {
       //home: CategoriesScreen(),
       initialRoute: '/',
       routes: {
-        '/': (_) => TabsScreen(_favoriteMeals, _availableMeals),
+        '/': (_) => TabsScreen(_favoriteMeals, _availableMeals, _toggleFavorite, isMealFavorite),
         CategoryMealsScreen.routeName: (_) =>
             CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName: (_) => MealDetailScreen(_toggleFavorite, isMealFavorite),
+        MealDetailScreen.routeName: (_) =>
+            MealDetailScreen(_toggleFavorite, isMealFavorite),
         FiltersScreen.routeName: (_) => FiltersScreen(_filters, _setFilters),
       },
     );
+  }
+
+  Widget buildCupertinoApp(){
+    return CupertinoApp(
+      title: 'DeliMeals',
+      theme: CupertinoThemeData(
+        primaryColor: Colors.pink,
+        primaryContrastingColor: Colors.amber,
+        textTheme: CupertinoTextThemeData(
+          textStyle: TextStyle(
+            fontSize: 20,
+            fontFamily: 'RobotoCondensed',
+            fontWeight: FontWeight.bold,
+            color: Colors.black
+          ),
+        ),
+      ),
+      //home: CategoriesScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (_) => TabsScreen(_favoriteMeals, _availableMeals, _toggleFavorite, isMealFavorite),
+        CategoryMealsScreen.routeName: (_) =>
+            CategoryMealsScreen(_availableMeals),
+        MealDetailScreen.routeName: (_) =>
+            MealDetailScreen(_toggleFavorite, isMealFavorite),
+        FiltersScreen.routeName: (_) => FiltersScreen(_filters, _setFilters),
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //return Platform.isIOS ? buildCupertinoApp() : buildMaterialApp();
+    return buildMaterialApp();
   }
 }
 

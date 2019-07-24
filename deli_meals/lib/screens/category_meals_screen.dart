@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/meal_item.dart';
@@ -54,25 +57,40 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
     });
   }
 
+  PreferredSizeWidget buildAndroidAppBar(String categoryTitle) {
+    return !Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text(categoryTitle),
+          )
+        : AppBar(
+            title: Text(categoryTitle),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(categoryTitle),
-      ),
-      body: ListView.builder(
-        itemBuilder: (ctx, index) {
-          return MealItem(
-            id: displayedMeals[index].id,
-            title: displayedMeals[index].title,
-            affordability: displayedMeals[index].affordability,
-            complexity: displayedMeals[index].complexity,
-            duration: displayedMeals[index].duration,
-            imageUrl: displayedMeals[index].imageUrl,
-          );
-        },
-        itemCount: displayedMeals.length,
-      ),
+    Widget mealsList = ListView.builder(
+      itemBuilder: (ctx, index) {
+        return MealItem(
+          id: displayedMeals[index].id,
+          title: displayedMeals[index].title,
+          affordability: displayedMeals[index].affordability,
+          complexity: displayedMeals[index].complexity,
+          duration: displayedMeals[index].duration,
+          imageUrl: displayedMeals[index].imageUrl,
+        );
+      },
+      itemCount: displayedMeals.length,
     );
+
+    return !Platform.isIOS
+        ? CupertinoPageScaffold(
+            navigationBar: buildAndroidAppBar(categoryTitle),
+            child: mealsList,
+          )
+        : Scaffold(
+            appBar: buildAndroidAppBar(categoryTitle),
+            body: mealsList,
+          );
   }
 }
