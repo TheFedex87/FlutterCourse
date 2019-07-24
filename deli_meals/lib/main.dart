@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import './screens/filters_screen.dart';
@@ -88,7 +89,7 @@ class _MyAppState extends State<MyApp> {
       //home: CategoriesScreen(),
       initialRoute: '/',
       routes: {
-        '/': (_) => TabsScreen(_favoriteMeals),
+        '/': (_) => TabsScreen(_favoriteMeals, _availableMeals),
         CategoryMealsScreen.routeName: (_) =>
             CategoryMealsScreen(_availableMeals),
         MealDetailScreen.routeName: (_) => MealDetailScreen(_toggleFavorite, isMealFavorite),

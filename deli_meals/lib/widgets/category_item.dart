@@ -28,10 +28,9 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => selectCategory(context),
-      splashColor: Theme.of(context).primaryColor,
-      borderRadius: BorderRadius.circular(15),
+      
       child: Container(
           padding: const EdgeInsets.all(15),
           child: Text(
