@@ -26,6 +26,7 @@ class _MyAppState extends State<MyApp> {
   };
   List<Meal> _availableMeals = DUMMY_MEALS;
   List<Meal> _favoriteMeals = [];
+  Map<String, Widget Function(BuildContext)> routes;
 
   void _setFilters(Map<String, bool> filteredData) {
     setState(() {
@@ -66,13 +67,27 @@ class _MyAppState extends State<MyApp> {
     return _favoriteMeals.any((meal) => meal.id == mealId);
   }
 
+  @override
+  void initState() {
+    routes = {
+      CategoryMealsScreen.routeName: (_) =>
+          CategoryMealsScreen(_availableMeals),
+      MealDetailScreen.routeName: (_) =>
+          MealDetailScreen(_toggleFavorite, isMealFavorite),
+      FiltersScreen.routeName: (_) => FiltersScreen(_filters, _setFilters),
+    };
+    super.initState();
+  }
+
   Widget buildMaterialApp() {
     return MaterialApp(
       title: 'DeliMeals',
       theme: ThemeData(
         primarySwatch: Colors.pink,
         accentColor: Colors.amber,
-        canvasColor: !Platform.isIOS ? Colors.white : Color.fromRGBO(255, 254, 229, 1),
+        canvasColor: !Platform.isIOS
+            ? Color.fromRGBO(255, 254, 229, 1)
+            : Color.fromRGBO(255, 254, 229, 1),
         fontFamily: 'Raleway',
         textTheme: ThemeData.light().textTheme.copyWith(
               body1: TextStyle(
@@ -91,17 +106,14 @@ class _MyAppState extends State<MyApp> {
       //home: CategoriesScreen(),
       initialRoute: '/',
       routes: {
-        '/': (_) => TabsScreen(_favoriteMeals, _availableMeals, _toggleFavorite, isMealFavorite),
-        CategoryMealsScreen.routeName: (_) =>
-            CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName: (_) =>
-            MealDetailScreen(_toggleFavorite, isMealFavorite),
-        FiltersScreen.routeName: (_) => FiltersScreen(_filters, _setFilters),
+        '/': (_) => TabsScreen(_favoriteMeals, _availableMeals, _toggleFavorite,
+            isMealFavorite, routes),
+        ...routes,
       },
     );
   }
 
-  Widget buildCupertinoApp(){
+  Widget buildCupertinoApp() {
     return CupertinoApp(
       title: 'DeliMeals',
       theme: CupertinoThemeData(
@@ -109,29 +121,30 @@ class _MyAppState extends State<MyApp> {
         primaryContrastingColor: Colors.amber,
         textTheme: CupertinoTextThemeData(
           textStyle: TextStyle(
-            fontSize: 20,
-            fontFamily: 'RobotoCondensed',
-            fontWeight: FontWeight.bold,
-            color: Colors.black
-          ),
+              fontSize: 20,
+              fontFamily: 'RobotoCondensed',
+              fontWeight: FontWeight.bold,
+              color: Colors.black),
         ),
       ),
       //home: CategoriesScreen(),
       initialRoute: '/',
       routes: {
-        '/': (_) => TabsScreen(_favoriteMeals, _availableMeals, _toggleFavorite, isMealFavorite),
-        CategoryMealsScreen.routeName: (_) =>
-            CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName: (_) =>
-            MealDetailScreen(_toggleFavorite, isMealFavorite),
-        FiltersScreen.routeName: (_) => FiltersScreen(_filters, _setFilters),
+        '/': (_) => TabsScreen(
+              _favoriteMeals,
+              _availableMeals,
+              _toggleFavorite,
+              isMealFavorite,
+              routes,
+            ),
+        ...routes,
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    //return Platform.isIOS ? buildCupertinoApp() : buildMaterialApp();
+    //return !Platform.isIOS ? buildCupertinoApp() : buildMaterialApp();
     return buildMaterialApp();
   }
 }

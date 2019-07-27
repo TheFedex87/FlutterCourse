@@ -16,8 +16,15 @@ class TabsScreen extends StatefulWidget {
   final Function toggleFavorite;
   final Function isMealFavorite;
 
-  TabsScreen(this.favoriteMeals, this.availableMeals, this.toggleFavorite,
-      this.isMealFavorite);
+  final Map<String, Widget Function(BuildContext)> routes;
+
+  TabsScreen(
+    this.favoriteMeals,
+    this.availableMeals,
+    this.toggleFavorite,
+    this.isMealFavorite,
+    this.routes,
+  );
 
   @override
   _TabsScreenState createState() => _TabsScreenState();
@@ -93,10 +100,7 @@ class _TabsScreenState extends State<TabsScreen> {
       tabBuilder: (BuildContext context, int index) {
         return CupertinoTabView(
           routes: {
-            CategoryMealsScreen.routeName: (_) =>
-                CategoryMealsScreen(widget.availableMeals),
-            MealDetailScreen.routeName: (_) => MealDetailScreen(
-                widget.toggleFavorite, widget.isMealFavorite),
+            ...widget.routes,
           },
           builder: (BuildContext context) {
             return CupertinoPageScaffold(
