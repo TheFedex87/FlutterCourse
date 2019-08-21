@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 import './product.dart';
+import '../models/http_exceptions.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -78,14 +79,16 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     const url = 'https://flutter-shop-app-541b5.firebaseio.com/products.json';
     try {
-      final response = await http.post(url,
-          body: json.encode({
-            'title': product.title,
-            'price': product.price,
-            'description': product.description,
-            'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite,
-          }));
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'price': product.price,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'isFavorite': product.isFavorite,
+        }),
+      );
 
       final newProduct = Product(
         title: product.title,
@@ -104,10 +107,27 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      _items[prodIndex] = newProduct;
+      final url =
+          'https://flutter-shop-app-541b5.firebaseio.com/products/$id.json';
+      try {
+        await http.patch(
+          url,
+          body: json.encode({
+            'title': newProduct.title,
+            'price': newProduct.price,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+          }),
+        );
+        _items[prodIndex] = newProduct;
+        notifyListeners();
+      } catch (error) {
+        print(error);
+        throw error;
+      }
     } else {
       print('...');
     }
@@ -115,9 +135,21 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
-
+  Future<void> deleteProduct(String id) async {
+    final url = 'https://flutter-shop-app-541b5.firebaseio.com/products/$id.json';
+    // Example of Optimistic updating: remove from local, but before store a reference to the object and if remote update fails, restore the local object to the list
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    // Delete does not throws an error, so if we want check for an error we have to read response status code
+    final response = await http.delete(url);
+    print(response.statusCode);
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    existingProduct = null;
   }
 }
