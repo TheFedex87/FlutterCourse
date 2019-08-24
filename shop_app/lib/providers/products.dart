@@ -42,6 +42,10 @@ class Products with ChangeNotifier {
     ),*/
   ];
 
+  Products(this.authToken, this._items);
+
+  final String authToken;
+
   List<Product> get items {
     return [..._items];
   }
@@ -55,7 +59,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url = 'https://flutter-shop-app-541b5.firebaseio.com/products.json';
+    final url = 'https://flutter-shop-app-541b5.firebaseio.com/products.json?auth=$authToken';
     try {
       final products = await http.get(url);
       final extractedData = json.decode(products.body) as Map<String, dynamic>;
