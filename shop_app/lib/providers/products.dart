@@ -84,7 +84,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://flutter-shop-app-541b5.firebaseio.com/products.json';
+    final url = 'https://flutter-shop-app-541b5.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         url,
@@ -118,7 +118,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final url =
-          'https://flutter-shop-app-541b5.firebaseio.com/products/$id.json';
+          'https://flutter-shop-app-541b5.firebaseio.com/products/$id.json?auth=$authToken';
       try {
         await http.patch(
           url,
@@ -143,7 +143,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = 'https://flutter-shop-app-541b5.firebaseio.com/products/$id.json';
+    final url = 'https://flutter-shop-app-541b5.firebaseio.com/products/$id.json?auth=$authToken';
     // Example of Optimistic updating: remove from local, but before store a reference to the object and if remote update fails, restore the local object to the list
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
