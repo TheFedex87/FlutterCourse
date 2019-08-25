@@ -24,18 +24,18 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  Future<void> toggleFavoriteState(String authToken) async {
+  Future<void> toggleFavoriteState(String authToken, String userId) async {
     final url =
-        'https://flutter-shop-app-541b5.firebaseio.com/products/$id.json?auth=$authToken';
-          
+        'https://flutter-shop-app-541b5.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken';
+
     isFavorite = !isFavorite;
     notifyListeners();
     try {
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(
+          isFavorite,
+        ),
       );
       if (response.statusCode >= 400) {
         throw HttpException('Error updating favorite status.');
@@ -46,6 +46,5 @@ class Product with ChangeNotifier {
       print(error);
       //throw HttpException('Error updating favorite state');
     }
-    
   }
 }
