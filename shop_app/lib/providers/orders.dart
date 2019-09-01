@@ -23,11 +23,17 @@ class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
   final String authToken;
+  final userId;
 
-  Orders(this.authToken, this._orders);
+  Orders(
+    this.authToken,
+    this._orders,
+    this.userId,
+  );
 
   Future<void> fetchAndSetOrders() async {
-    final url = 'https://flutter-shop-app-541b5.firebaseio.com/orders.json?auth=$authToken';
+    final url =
+        'https://flutter-shop-app-541b5.firebaseio.com/orders/$userId.json?auth=$authToken';
     final orders = await http.get(url);
     final extractedData = json.decode(orders.body) as Map<String, dynamic>;
     if (extractedData == null) {
@@ -61,7 +67,8 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final url = 'https://flutter-shop-app-541b5.firebaseio.com/orders.json?auth=$authToken';
+    final url =
+        'https://flutter-shop-app-541b5.firebaseio.com/orders/$userId.json?auth=$authToken';
     final timeStamp = DateTime.now();
     final response = await http.post(
       url,
@@ -75,6 +82,7 @@ class Orders with ChangeNotifier {
                 'title': product.title,
                 'quantity': product.quantity,
                 'price': product.price,
+
               },
             )
             .toList(),

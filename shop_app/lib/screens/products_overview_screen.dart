@@ -29,7 +29,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       setState(() => _isLoading = true);
       
       Provider.of<Products>(context)
-          .fetchAndSetProducts(true)
+          .fetchAndSetProducts()
           .then((_) => setState(() => _isLoading = false));
     }
     _isInit = false;
@@ -37,7 +37,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   }
 
   Future<void> _refreshProducts(BuildContext context) async {
-    await Provider.of<Products>(context).fetchAndSetProducts(true);
+    await Provider.of<Products>(context).fetchAndSetProducts();
   }
 
   @override
